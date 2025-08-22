@@ -91,15 +91,6 @@ lib/
 - Choose 10 or 12 ends per set
 - Settings automatically reinitialize scorecard
 
-## design references
-
-The application is built to match the exact layout provided in the `.uidesign/` folder:
-
-- **scorecard.xlsx**: Excel template showing the precise column layout and calculations
-- **keypad_layout.xlsx**: Keypad button arrangement with color specifications
-- **scorecard.pdf**: Visual reference for the traditional paper scorecard format
-- **Scoresheet_Outdoors_1plot_1in.pdf**: Official archery scoring sheet for reference
-
 Color scheme follows archery conventions:
 - Gold/amber for X and 10 values (highest scores)
 - Blue highlighting for end totals
