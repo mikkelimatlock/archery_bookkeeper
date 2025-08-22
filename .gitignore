@@ -46,3 +46,6 @@ app.*.map.json
 
 # Designing references
 .uidesign/
+
+# human note
+NOTES.txt

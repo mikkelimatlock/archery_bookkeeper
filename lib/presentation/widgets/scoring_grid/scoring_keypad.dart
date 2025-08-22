@@ -56,6 +56,7 @@ class ScoringKeypad extends StatelessWidget {
     Color textColor = Colors.black;
     
     // Color scheme matching your design
+    // TODO: Update this to match `scoring_cell.dart`
     switch (score) {
       case 'X':
         buttonColor = Colors.amber.shade300;

@@ -15,15 +15,21 @@ class ScoringCell extends StatelessWidget {
   Color _getScoreColor(String score) {
     switch (score) {
       case 'X':
-        return Colors.gold;
       case '10':
-        return Colors.gold.shade200;
       case '9':
-        return Colors.yellow.shade200;
+        return Color(0xEEffeb50);
       case '8':
-        return Colors.blue.shade200;
       case '7':
-        return Colors.blue.shade100;
+        return Color(0xEEed3f36);
+      case '6':
+      case '5':
+        return Color(0xEE01afd8);
+      case '4':
+      case '3':
+        return Color(0xEE222222);
+      case '2':
+      case '1':
+        return Color(0xEEFFFFFF);
       default:
         return Colors.transparent;
     }
