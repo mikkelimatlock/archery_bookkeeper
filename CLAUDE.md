@@ -202,6 +202,62 @@ dev_dependencies:
   json_serializable: ^6.7.1
 ```
 
+### color architecture system
+
+The application features a sophisticated centralized color management system built around the `ScoringColorScheme` class, providing consistent visual theming across all scoring components.
+
+**architecture overview**:
+- centralized color definitions in `lib/config/constants/scoring_colors.dart`
+- explicit background and text color pairs for every score value
+- multiple color schemes: traditional (vibrant) and lowSaturation (muted)
+- disabled state colors for conditional UI elements
+- single source of truth for all score-related visual styling
+
+**color scheme structure**:
+```dart
+class ScoringColorScheme {
+  // Background colors for each score value
+  final Color goldRing;     // X, 10, 9
+  final Color redRing;      // 8, 7
+  final Color blueRing;     // 6, 5
+  final Color blackRing;    // 4, 3
+  final Color whiteRing;    // 2, 1
+  final Color miss;         // M
+  final Color clear;        // CLEAR button
+  
+  // Explicit text colors for each background
+  final Color goldText;     // Black on gold for traditional
+  final Color redText;      // White on red
+  final Color blueText;     // White on blue
+  // ... etc for all combinations
+  
+  // Disabled state colors
+  final Color disabledBackground;
+  final Color disabledText;
+  final Color disabledBorder;
+}
+```
+
+**usage patterns**:
+```dart
+// Get colors for any score value
+Color bg = ScoringColors.getScoreBackgroundColor('X');
+Color text = ScoringColors.getScoreTextColor('X');
+
+// Apply disabled styling for inactive elements
+Color disabledBg = ScoringColors.getDisabledBackground();
+Color disabledText = ScoringColors.getDisabledText();
+```
+
+**scheme switching**:
+Change the active color scheme globally by updating `_currentScheme` in `scoring_colors.dart`. The traditional scheme uses vibrant archery target colors for high visibility, while lowSaturation provides muted tones for reduced eye strain during extended use.
+
+**disabled state implementation**:
+The color system includes comprehensive disabled state support, used extensively for the sum of 6 column which remains visible but greyed out when in 3-arrow end mode. This maintains layout consistency while clearly indicating inactive functionality.
+
+**extensibility**:
+The architecture is designed for easy expansion with additional color schemes such as high contrast, colorblind-friendly, or dark theme variants. Each scheme defines all required colors explicitly, preventing contrast issues and ensuring intentional design decisions.
+
 ### code organization principles
 
 **separation of concerns**:
