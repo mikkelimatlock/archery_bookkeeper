@@ -1,11 +1,23 @@
-# archery_bookkeeper
-Web application for target archery scoring.
+# Archery Bookkeeper
 
-## node.js server for debugging
-Requires Node.js and relevant packages to run.  
-*express* and *morgan* for the actual server and logging:  
-`npm install express morgan`  
-*WebSocket* for front-backend communications.  
-`npm install ws`  
-Boot up the server with:    
-`node server.js`  
+Flutter application for target archery scoring.
+
+Personal practice companion for World Archery Target discipline scoring with data export capabilities.
+
+## Features
+
+- Spreadsheet-like scoring interface with minimalistic design
+- Scoring keypad: X/10/9/8/7/6/5/4/3/2/1/M
+- Support for 3/6 arrows per end and 10/12 ends per set
+- Automatic score calculation and X/10/9 counting
+- Local scoring history with export to images
+- Multi-language support
+
+## Development
+
+This is a Flutter project. To run:
+
+```bash
+flutter pub get
+flutter run
+```
