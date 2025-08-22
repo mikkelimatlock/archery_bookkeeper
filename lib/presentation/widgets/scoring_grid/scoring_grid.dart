@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'scoring_cell.dart';
+import '../../../config/constants/scoring_colors.dart';
 
 class ScoringGrid extends StatelessWidget {
   final List<List<String>> scores;
@@ -94,7 +95,19 @@ class ScoringGrid extends StatelessWidget {
                 ...List.generate(arrowsPerEnd, (index) => 
                   Expanded(child: Center(child: Text('#${index + 1}', style: const TextStyle(fontWeight: FontWeight.bold))))),
                 const SizedBox(width: 70, child: Center(child: Text('Sum of 3', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)))),
-                const SizedBox(width: 70, child: Center(child: Text('Sum of 6', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)))),
+                SizedBox(
+                  width: 70, 
+                  child: Center(
+                    child: Text(
+                      'Sum of 6', 
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold, 
+                        fontSize: 12,
+                        color: arrowsPerEnd == 3 ? ScoringColors.getDisabledText() : null,
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(width: 80, child: Center(child: Text('Accumulative', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)))),
               ],
             ),
@@ -170,15 +183,26 @@ class ScoringGrid extends StatelessWidget {
                         width: 70,
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
-                          color: row % 2 == 1 ? Colors.yellow.shade100 : Colors.transparent,
+                          color: arrowsPerEnd == 3 
+                            ? ScoringColors.getDisabledBackground()
+                            : (row % 2 == 1 ? Colors.yellow.shade100 : Colors.transparent),
                           border: Border(
-                            left: BorderSide(color: Colors.grey.shade300),
+                            left: BorderSide(
+                              color: arrowsPerEnd == 3 
+                                ? ScoringColors.getDisabledBorder()
+                                : Colors.grey.shade300,
+                            ),
                           ),
                         ),
                         child: Center(
                           child: Text(
-                            sumOfSix > 0 ? sumOfSix.toString() : '',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            (arrowsPerEnd == 3 || sumOfSix == 0) ? '' : sumOfSix.toString(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: arrowsPerEnd == 3 
+                                ? ScoringColors.getDisabledText()
+                                : null,
+                            ),
                           ),
                         ),
                       ),

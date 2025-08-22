@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../config/constants/scoring_colors.dart';
 
 class ScoringKeypad extends StatelessWidget {
   final Function(String) onScoreInput;
@@ -52,56 +53,9 @@ class ScoringKeypad extends StatelessWidget {
   }
 
   Widget _buildKeypadButton(BuildContext context, String score, {bool isWide = false}) {
-    Color buttonColor;
-    Color textColor = Colors.black;
-    
-    // Color scheme matching your design
-    // TODO: Update this to match `scoring_cell.dart`
-    switch (score) {
-      case 'X':
-        buttonColor = Colors.amber.shade300;
-        break;
-      case '10':
-        buttonColor = Colors.amber.shade300;
-        break;
-      case '9':
-        buttonColor = Colors.yellow.shade300;
-        break;
-      case '8':
-        buttonColor = Colors.red.shade400;
-        textColor = Colors.white;
-        break;
-      case '7':
-        buttonColor = Colors.red.shade400;
-        textColor = Colors.white;
-        break;
-      case '6':
-        buttonColor = Colors.blue.shade400;
-        textColor = Colors.white;
-        break;
-      case '5':
-        buttonColor = Colors.blue.shade400;
-        textColor = Colors.white;
-        break;
-      case '4':
-        buttonColor = Colors.black87;
-        textColor = Colors.white;
-        break;
-      case '3':
-        buttonColor = Colors.black87;
-        textColor = Colors.white;
-        break;
-      case 'M':
-        buttonColor = Colors.grey.shade400;
-        break;
-      case 'CLEAR':
-        buttonColor = Colors.orange.shade400;
-        textColor = Colors.white;
-        break;
-      default:
-        buttonColor = Colors.grey.shade300;
-        break;
-    }
+    // Use centralized color configuration for consistency
+    final buttonColor = ScoringColors.getScoreBackgroundColor(score);
+    final textColor = ScoringColors.getScoreTextColor(score);
 
     return ElevatedButton(
       onPressed: () => onScoreInput(score),
@@ -118,7 +72,7 @@ class ScoringKeypad extends StatelessWidget {
         score,
         style: TextStyle(
           fontSize: isWide ? 16 : (score.length > 1 ? 14 : 18),
-          fontWeight: FontWeight.bold,
+          fontWeight: ScoringColors.shouldUseBoldText(score) ? FontWeight.bold : FontWeight.w600,
         ),
       ),
     );
