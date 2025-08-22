@@ -91,12 +91,12 @@ class ScoringGrid extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const SizedBox(width: 60, child: Center(child: Text('End\\Shot', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)))),
+                const SizedBox(width: 50, child: Center(child: Text('End\\Shot', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)))),
                 ...List.generate(arrowsPerEnd, (index) => 
-                  Expanded(child: Center(child: Text('#${index + 1}', style: const TextStyle(fontWeight: FontWeight.bold))))),
-                const SizedBox(width: 70, child: Center(child: Text('Sum of 3', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)))),
+                  SizedBox(width: 55, child: Center(child: Text('#${index + 1}', style: const TextStyle(fontWeight: FontWeight.bold))))),
+                const SizedBox(width: 55, child: Center(child: Text('Sum of 3', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)))),
                 SizedBox(
-                  width: 70, 
+                  width: 55, 
                   child: Center(
                     child: Text(
                       'Sum of 6', 
@@ -108,7 +108,7 @@ class ScoringGrid extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 80, child: Center(child: Text('Accumulative', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)))),
+                const SizedBox(width: 70, child: Center(child: Text('Accumulative', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)))),
               ],
             ),
           ),
@@ -133,7 +133,7 @@ class ScoringGrid extends StatelessWidget {
                     children: [
                       // End number
                       Container(
-                        width: 60,
+                        width: 50,
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
                           color: Colors.grey.shade100,
@@ -151,7 +151,8 @@ class ScoringGrid extends StatelessWidget {
                       
                       // Arrow score cells
                       ...List.generate(arrowsPerEnd, (column) => 
-                        Expanded(
+                        SizedBox(
+                          width: 55,
                           child: ScoringCell(
                             score: scores[row][column],
                             isSelected: selectedRow == row && selectedColumn == column,
@@ -162,7 +163,7 @@ class ScoringGrid extends StatelessWidget {
                       
                       // Sum of 3 (end total)
                       Container(
-                        width: 70,
+                        width: 55,
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
                           color: Colors.blue.shade50,
@@ -180,7 +181,7 @@ class ScoringGrid extends StatelessWidget {
                       
                       // Sum of 6 (two-end total, only for even rows)
                       Container(
-                        width: 70,
+                        width: 55,
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
                           color: arrowsPerEnd == 3 
@@ -209,7 +210,7 @@ class ScoringGrid extends StatelessWidget {
                       
                       // Accumulative (running total)
                       Container(
-                        width: 80,
+                        width: 70,
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
                           color: Colors.green.shade50,
