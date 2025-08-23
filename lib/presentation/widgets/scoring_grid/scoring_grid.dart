@@ -34,12 +34,74 @@ class ScoringGrid extends StatelessWidget {
     return total;
   }
 
-  int _calculateSumOfSix(int endIndex) {
-    // Calculate sum of two consecutive ends (for even-numbered ends)
-    if (endIndex % 2 == 1 && endIndex > 0) {
-      return _calculateEndTotal(scores[endIndex - 1]) + _calculateEndTotal(scores[endIndex]);
+  // Visual-to-logical mapping helpers
+  int _getLogicalEndFromVisualRow(int visualRow) {
+    if (arrowsPerEnd == 3) {
+      // 3-arrow mode: 1 visual row = 1 logical end
+      return visualRow;
+    } else {
+      // 6-arrow mode: 2 visual rows = 1 logical end
+      return visualRow ~/ 2;
+    }
+  }
+  
+  int _getArrowIndexFromVisualPosition(int visualRow, int column) {
+    if (arrowsPerEnd == 3) {
+      // 3-arrow mode: column directly maps to arrow index
+      return column;
+    } else {
+      // 6-arrow mode: row within end determines arrow offset
+      final rowWithinEnd = visualRow % 2;
+      return (rowWithinEnd * 3) + column;
+    }
+  }
+  
+  bool _isVisualRowActive(int visualRow) {
+    if (arrowsPerEnd == 3) {
+      return visualRow < 10; // 10 ends for 3-arrow mode
+    } else {
+      return visualRow < 12; // All 12 rows active for 6-arrow mode
+    }
+  }
+  
+  // Fixed sum calculations using logical groupings
+  int _calculateSumOfThreeForLogicalEnd(int logicalEnd) {
+    if (logicalEnd >= scores.length) return 0;
+    
+    // For 3-arrow mode: sum first 3 arrows
+    // For 6-arrow mode: sum first 3 arrows (arrows 0-2)
+    int total = 0;
+    final maxArrows = arrowsPerEnd == 3 ? 3 : 3; // Always sum first 3 arrows for Sum of 3
+    
+    for (int i = 0; i < maxArrows && i < scores[logicalEnd].length; i++) {
+      final score = scores[logicalEnd][i];
+      if (score == 'X') {
+        total += 10;
+      } else if (score == 'M' || score.isEmpty) {
+        total += 0;
+      } else {
+        total += int.tryParse(score) ?? 0;
+      }
+    }
+    return total;
+  }
+  
+  int _calculateSumOfSixForLogicalEnd(int logicalEnd) {
+    if (arrowsPerEnd == 6) {
+      // 6-arrow mode: sum all 6 arrows of this logical end
+      return _calculateEndTotal(scores[logicalEnd]);
+    } else {
+      // 3-arrow mode: sum this end + previous end (6 arrows total)
+      if (logicalEnd % 2 == 1 && logicalEnd > 0) {
+        return _calculateEndTotal(scores[logicalEnd - 1]) + _calculateEndTotal(scores[logicalEnd]);
+      }
     }
     return 0;
+  }
+  
+  // Keep legacy method for accumulative calculation
+  int _calculateSumOfSix(int endIndex) {
+    return _calculateSumOfSixForLogicalEnd(endIndex);
   }
 
   int _calculateAccumulative(int endIndex) {
@@ -91,36 +153,79 @@ class ScoringGrid extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const SizedBox(width: 50, child: Center(child: Text('End\\Shot', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)))),
-                ...List.generate(arrowsPerEnd, (index) => 
-                  SizedBox(width: 55, child: Center(child: Text('#${index + 1}', style: const TextStyle(fontWeight: FontWeight.bold))))),
-                const SizedBox(width: 55, child: Center(child: Text('Sum of 3', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)))),
-                SizedBox(
-                  width: 55, 
+                // End column: ~13% (50/395)
+                Expanded(
+                  flex: 13,
+                  child: Center(child: Text('End\\Shot', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                ),
+                // Arrow columns: ~42% (165/395)
+                Expanded(
+                  flex: 42,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade100,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Text('Arrows', style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ),
+                // Sum of 3: ~14% (55/395)
+                Expanded(
+                  flex: 14,
                   child: Center(
                     child: Text(
-                      'Sum of 6', 
+                      'Sum of 3', 
                       style: TextStyle(
                         fontWeight: FontWeight.bold, 
                         fontSize: 12,
-                        color: arrowsPerEnd == 3 ? ScoringColors.getDisabledText() : null,
+                        color: arrowsPerEnd == 6 ? ScoringColors.getDisabledText() : null,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 70, child: Center(child: Text('Accumulative', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)))),
+                // Sum of 6: ~14% (55/395)
+                Expanded(
+                  flex: 14,
+                  child: Center(
+                    child: Text(
+                      'Sum of 6', 
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold, 
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+                // Accumulative: ~17% (70/395)
+                Expanded(
+                  flex: 17,
+                  child: Center(child: Text('Accumulative', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                ),
               ],
             ),
           ),
           
-          // Scoring rows
+          // Scoring rows - always 12 static rows
           Expanded(
             child: ListView.builder(
-              itemCount: endsPerSet,
-              itemBuilder: (context, row) {
-                final endTotal = _calculateEndTotal(scores[row]);
-                final sumOfSix = _calculateSumOfSix(row);
-                final accumulative = _calculateAccumulative(row);
+              itemCount: 12, // Always 12 visual rows regardless of ruleset
+              itemBuilder: (context, visualRow) {
+                // Use logical grouping approach
+                final isActiveRow = _isVisualRowActive(visualRow);
+                final logicalEnd = isActiveRow ? _getLogicalEndFromVisualRow(visualRow) : -1;
+                final rowsPerEnd = arrowsPerEnd == 6 ? 2 : 1;
+                final rowWithinEnd = visualRow % rowsPerEnd;
+                
+                // Calculate sums using logical groupings with bounds checking
+                final sumOfThree = (isActiveRow && logicalEnd >= 0 && logicalEnd < scores.length) 
+                    ? _calculateSumOfThreeForLogicalEnd(logicalEnd) : 0;
+                final sumOfSix = (isActiveRow && logicalEnd >= 0 && logicalEnd < scores.length) 
+                    ? _calculateSumOfSixForLogicalEnd(logicalEnd) : 0;
+                final accumulative = (isActiveRow && logicalEnd >= 0 && logicalEnd < scores.length) 
+                    ? _calculateAccumulative(logicalEnd) : 0;
                 
                 return Container(
                   height: 50,
@@ -131,97 +236,155 @@ class ScoringGrid extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      // End number
-                      Container(
-                        width: 50,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          border: Border(
-                            right: BorderSide(color: Colors.grey.shade300),
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '#${row + 1}',
-                            style: const TextStyle(fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                      ),
-                      
-                      // Arrow score cells
-                      ...List.generate(arrowsPerEnd, (column) => 
-                        SizedBox(
-                          width: 55,
-                          child: ScoringCell(
-                            score: scores[row][column],
-                            isSelected: selectedRow == row && selectedColumn == column,
-                            onTap: () => onCellSelected(row, column),
-                          ),
-                        ),
-                      ),
-                      
-                      // Sum of 3 (end total)
-                      Container(
-                        width: 55,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          border: Border(
-                            left: BorderSide(color: Colors.grey.shade300),
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            endTotal.toString(),
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                      
-                      // Sum of 6 (two-end total, only for even rows)
-                      Container(
-                        width: 55,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        decoration: BoxDecoration(
-                          color: arrowsPerEnd == 3 
-                            ? ScoringColors.getDisabledBackground()
-                            : (row % 2 == 1 ? Colors.yellow.shade100 : Colors.transparent),
-                          border: Border(
-                            left: BorderSide(
-                              color: arrowsPerEnd == 3 
-                                ? ScoringColors.getDisabledBorder()
-                                : Colors.grey.shade300,
+                      // End number (only show on first row of each end)
+                      Expanded(
+                        flex: 13,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: isActiveRow ? Colors.grey.shade100 : ScoringColors.getDisabledBackground(),
+                            border: Border(
+                              right: BorderSide(
+                                color: isActiveRow ? Colors.grey.shade300 : ScoringColors.getDisabledBorder(),
+                              ),
                             ),
                           ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            (arrowsPerEnd == 3 || sumOfSix == 0) ? '' : sumOfSix.toString(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: arrowsPerEnd == 3 
-                                ? ScoringColors.getDisabledText()
-                                : null,
+                          child: Center(
+                            child: Text(
+                              (isActiveRow && rowWithinEnd == 0 && logicalEnd >= 0) ? '#${logicalEnd + 1}' : '',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: isActiveRow ? null : ScoringColors.getDisabledText(),
+                              ),
                             ),
                           ),
                         ),
                       ),
                       
-                      // Accumulative (running total)
-                      Container(
-                        width: 70,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade50,
-                          border: Border(
-                            left: BorderSide(color: Colors.grey.shade300),
+                      // Arrow cells section - 42% total width split evenly among 3 columns
+                      Expanded(
+                        flex: 42,
+                        child: Row(
+                          children: List.generate(3, (column) {
+                            // Use logical grouping to determine arrow index
+                            final arrowIndex = _getArrowIndexFromVisualPosition(visualRow, column);
+                            final actualRow = logicalEnd;
+                            final actualColumn = arrowIndex;
+                            
+                            // Check if this cell should be active
+                            final cellActive = isActiveRow && arrowIndex < arrowsPerEnd && 
+                                             logicalEnd >= 0 && logicalEnd < scores.length;
+                            
+                            return Expanded(
+                              child: cellActive ? ScoringCell(
+                                score: scores[actualRow][actualColumn],
+                                isSelected: selectedRow == actualRow && selectedColumn == actualColumn,
+                                onTap: () => onCellSelected(actualRow, actualColumn),
+                              ) : Container(
+                                decoration: BoxDecoration(
+                                  color: ScoringColors.getDisabledBackground(),
+                                  border: Border.all(color: ScoringColors.getDisabledBorder()),
+                                ),
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                      
+                      // Sum of 3 (end total) - completely greyed in 6-arrow mode
+                      Expanded(
+                        flex: 14,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: (arrowsPerEnd == 6 || !isActiveRow) 
+                              ? ScoringColors.getDisabledBackground()
+                              : Colors.blue.shade50,
+                            border: Border(
+                              left: BorderSide(
+                                color: (arrowsPerEnd == 6 || !isActiveRow)
+                                  ? ScoringColors.getDisabledBorder()
+                                  : Colors.grey.shade300,
+                              ),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              // Show Sum of 3 only in 3-arrow mode on the single row per end
+                              (arrowsPerEnd == 6 || !isActiveRow) ? '' : sumOfThree.toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: (arrowsPerEnd == 6 || !isActiveRow)
+                                  ? ScoringColors.getDisabledText()
+                                  : null,
+                              ),
+                            ),
                           ),
                         ),
-                        child: Center(
-                          child: Text(
-                            accumulative.toString(),
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      
+                      // Sum of 6 - different logic for 3-arrow vs 6-arrow mode
+                      Expanded(
+                        flex: 14,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: !isActiveRow || visualRow % 2 == 0
+                              ? ScoringColors.getDisabledBackground()
+                              : Colors.yellow.shade100,
+                            border: Border(
+                              left: BorderSide(
+                                color: !isActiveRow || visualRow % 2 == 0
+                                  ? ScoringColors.getDisabledBorder()
+                                  : Colors.grey.shade300,
+                              ),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              // Show Sum of 6 on odd visual rows (0-indexed), when sum is available
+                              !isActiveRow || sumOfSix == 0 || visualRow % 2 == 0
+                                ? '' : sumOfSix.toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: !isActiveRow || visualRow % 2 == 0
+                                  ? ScoringColors.getDisabledText()
+                                  : null,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      
+                      // Accumulative (running total) - show on last row of each end
+                      Expanded(
+                        flex: 17,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: !isActiveRow || (arrowsPerEnd == 6 && rowWithinEnd == 0)
+                              ? ScoringColors.getDisabledBackground()
+                              : Colors.green.shade50,
+                            border: Border(
+                              left: BorderSide(
+                                color: !isActiveRow || (arrowsPerEnd == 6 && rowWithinEnd == 0)
+                                  ? ScoringColors.getDisabledBorder()
+                                  : Colors.grey.shade300,
+                              ),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              // Show accumulative only on last row of each logical end
+                              !isActiveRow || (arrowsPerEnd == 6 && rowWithinEnd == 0)
+                                ? '' : accumulative.toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: !isActiveRow || (arrowsPerEnd == 6 && rowWithinEnd == 0)
+                                  ? ScoringColors.getDisabledText()
+                                  : null,
+                              ),
+                            ),
                           ),
                         ),
                       ),

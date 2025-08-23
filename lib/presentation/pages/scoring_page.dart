@@ -33,13 +33,8 @@ class _ScoringPageState extends State<ScoringPage> {
   void _onArrowsPerEndChanged(int arrows) {
     setState(() {
       arrowsPerEnd = arrows;
-      _initializeScores();
-    });
-  }
-
-  void _onEndsPerSetChanged(int ends) {
-    setState(() {
-      endsPerSet = ends;
+      // Infer ends per set based on ruleset
+      endsPerSet = arrows == 3 ? 10 : 6;
       _initializeScores();
     });
   }
@@ -90,9 +85,7 @@ class _ScoringPageState extends State<ScoringPage> {
             padding: const EdgeInsets.all(16.0),
             child: ToggleSwitches(
               arrowsPerEnd: arrowsPerEnd,
-              endsPerSet: endsPerSet,
               onArrowsPerEndChanged: _onArrowsPerEndChanged,
-              onEndsPerSetChanged: _onEndsPerSetChanged,
             ),
           ),
           
