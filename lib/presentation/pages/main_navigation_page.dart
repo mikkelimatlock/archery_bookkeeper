@@ -12,8 +12,47 @@ class MainNavigationPage extends StatefulWidget {
 class _MainNavigationPageState extends State<MainNavigationPage> {
   int _selectedIndex = 0;
   
-  final List<Widget> _pages = [
-    const ScoringPage(),
+  // Persistent scoring state
+  int _arrowsPerEnd = 3;
+  int _endsPerSet = 12;
+  List<List<String>> _scores = [];
+  
+  @override
+  void initState() {
+    super.initState();
+    _initializeScores();
+  }
+  
+  void _initializeScores() {
+    _scores = List.generate(
+      _endsPerSet,
+      (index) => List.generate(_arrowsPerEnd, (index) => ''),
+    );
+  }
+  
+  void _onArrowsPerEndChanged(int arrows) {
+    setState(() {
+      _arrowsPerEnd = arrows;
+      _endsPerSet = arrows == 3 ? 10 : 6;
+      // Note: The actual score preservation dialog logic will be handled by ScoringPage
+      // This is just to keep the navigation-level state in sync
+    });
+  }
+  
+  void _onScoresUpdated(List<List<String>> newScores) {
+    setState(() {
+      _scores = newScores;
+    });
+  }
+  
+  List<Widget> get _pages => [
+    ScoringPage(
+      initialArrowsPerEnd: _arrowsPerEnd,
+      initialEndsPerSet: _endsPerSet,
+      initialScores: _scores,
+      onArrowsPerEndChanged: _onArrowsPerEndChanged,
+      onScoresUpdated: _onScoresUpdated,
+    ),
     const SettingsPage(),
   ];
 

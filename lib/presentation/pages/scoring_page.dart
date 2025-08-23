@@ -4,18 +4,31 @@ import '../widgets/scoring_grid/scoring_keypad.dart';
 import '../widgets/common/toggle_switches.dart';
 
 class ScoringPage extends StatefulWidget {
-  const ScoringPage({super.key});
+  final int initialArrowsPerEnd;
+  final int initialEndsPerSet;
+  final List<List<String>> initialScores;
+  final Function(int) onArrowsPerEndChanged;
+  final Function(List<List<String>>) onScoresUpdated;
+
+  const ScoringPage({
+    super.key,
+    required this.initialArrowsPerEnd,
+    required this.initialEndsPerSet,
+    required this.initialScores,
+    required this.onArrowsPerEndChanged,
+    required this.onScoresUpdated,
+  });
 
   @override
   State<ScoringPage> createState() => _ScoringPageState();
 }
 
 class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStateMixin {
-  int arrowsPerEnd = 3;
-  int endsPerSet = 12;
-  int selectedRow = 0;
-  int selectedColumn = 0;
-  List<List<String>> scores = [];
+  late int arrowsPerEnd;
+  late int endsPerSet;
+  int selectedRow = -1;
+  int selectedColumn = -1;
+  late List<List<String>> scores;
   bool isKeypadVisible = false;
   int? activeEndIndex;
   late AnimationController _animationController;
@@ -24,6 +37,11 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
+    // Initialize with values from parent
+    arrowsPerEnd = widget.initialArrowsPerEnd;
+    endsPerSet = widget.initialEndsPerSet;
+    scores = _deepCopyScores(widget.initialScores);
+    
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 250),
       vsync: this,
@@ -32,7 +50,10 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
       parent: _animationController,
       curve: Curves.easeInOut,
     );
-    _initializeScores();
+  }
+  
+  List<List<String>> _deepCopyScores(List<List<String>> originalScores) {
+    return originalScores.map((end) => List<String>.from(end)).toList();
   }
 
   @override
@@ -104,6 +125,10 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
         } else {
           _initializeScores();
         }
+        
+        // Notify parent of changes
+        widget.onArrowsPerEndChanged(arrows);
+        widget.onScoresUpdated(scores);
       });
     } else {
       // No scores exist, just switch modes normally
@@ -112,6 +137,10 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
         // Infer ends per set based on ruleset
         endsPerSet = arrows == 3 ? 10 : 6;
         _initializeScores();
+        
+        // Notify parent of changes
+        widget.onArrowsPerEndChanged(arrows);
+        widget.onScoresUpdated(scores);
       });
     }
   }
@@ -155,6 +184,9 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
     
     // Update scores array
     scores[endIndex] = sortedScores;
+    
+    // Notify parent of score changes
+    widget.onScoresUpdated(scores);
   }
 
   int _findFirstEmptyCellInEnd(int endIndex) {
@@ -214,7 +246,7 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
       // Clear the selected cell
       if (selectedColumn < scores[selectedRow].length && scores[selectedRow][selectedColumn].isNotEmpty) {
         scores[selectedRow][selectedColumn] = '';
-        _sortEndScores(selectedRow);
+        _sortEndScores(selectedRow); // This already notifies parent
         // Retract keypad and disarm after clearing
         _animationController.reverse().then((_) {
           setState(() {
