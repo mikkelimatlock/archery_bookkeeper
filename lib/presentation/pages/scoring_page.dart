@@ -204,6 +204,7 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
       animation: _keypadAnimation,
       builder: (context, child) {
         // Calculate viewport heights based on animation progress
+        // AppBar is in parent navigation, account for status bar and safe area
         final availableHeight = (MediaQuery.of(context).size.height - 
                                MediaQuery.of(context).padding.top - 
                                kToolbarHeight).clamp(200.0, double.infinity); // Minimum 200px
@@ -212,10 +213,6 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
         final upperViewportHeight = (availableHeight - keypadHeight).clamp(100.0, availableHeight);
         
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Archery Scoring'),
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          ),
           body: GestureDetector(
             onTap: _onBackgroundTapped,
             behavior: HitTestBehavior.opaque,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'presentation/pages/scoring_page.dart';
+import 'presentation/pages/main_navigation_page.dart';
 
 void main() {
   runApp(const ArcheryBookkeeperApp());
@@ -19,7 +19,7 @@ class ArcheryBookkeeperApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const ScoringPage(),
+      home: const MainNavigationPage(),
     );
   }
 }
