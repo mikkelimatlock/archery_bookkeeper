@@ -51,3 +51,6 @@ INCOMPLETE_*.md
 
 # User notes - private human thoughts
 NOTES.txt
+
+# UI design references. DO NOT REMOVE FROM GITIGNORE
+.uidesign/
