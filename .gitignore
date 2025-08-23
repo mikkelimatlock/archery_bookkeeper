@@ -53,6 +53,10 @@ INCOMPLETE_*.md
 # DO NOT REMOVE FROM GITIGNORE
 NOTES.txt
 
+# Local TODO for next sessions
+# DO NOT REMOVE FROM GITIGNORE
+TODO.md
+
 # UI design references. 
 # DO NOT REMOVE FROM GITIGNORE
 .uidesign/
