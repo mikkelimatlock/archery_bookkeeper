@@ -88,20 +88,15 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Keep current scores?'),
-            content: const Text(
-              'You have existing scores on the scorecard. Do you want to keep them when switching arrow count modes?\n\n'
-              '• Yes: Existing scores will be preserved\n'
-              '• No: All scores will be cleared',
-            ),
+            title: const Text('Keep scores?'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('No - Clear scores'),
+                child: const Text('No'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Yes - Keep scores'),
+                child: const Text('Yes'),
               ),
             ],
           );
@@ -127,6 +122,9 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
           _initializeScores();
         }
         
+        // Clear active state and retract keypad
+        _disarmActiveState();
+        
         // Notify parent of changes
         widget.onArrowsPerEndChanged(arrows);
         widget.onScoresUpdated(scores);
@@ -138,6 +136,9 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
         // Infer ends per set based on ruleset
         endsPerSet = arrows == 3 ? 10 : 6;
         _initializeScores();
+        
+        // Clear active state and retract keypad
+        _disarmActiveState();
         
         // Notify parent of changes
         widget.onArrowsPerEndChanged(arrows);
@@ -279,6 +280,16 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
         selectedColumn = column;
       }
     });
+  }
+
+  void _disarmActiveState() {
+    if (isKeypadVisible) {
+      _animationController.reverse();
+    }
+    isKeypadVisible = false;
+    activeEndIndex = null;
+    selectedRow = -1;
+    selectedColumn = -1;
   }
 
   void _onBackgroundTapped() {
