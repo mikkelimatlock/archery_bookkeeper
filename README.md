@@ -1,23 +1,27 @@
-# Archery Bookkeeper
+# archery bookkeeper
 
-Flutter application for target archery scoring.
+Professional archery scoring application built with Flutter, designed to match traditional paper scorecards with modern digital convenience.
 
-Personal practice companion for World Archery Target discipline scoring with data export capabilities.
+## features
 
-## Features
+- Digital scorecard matching traditional paper layouts
+- Real-time score calculation and running totals  
+- Configurable settings for different archery formats
+- Color-coded scoring keypad with archery-standard conventions
+- X/10/9 counting for precision tracking
+- Centralized color architecture with traditional and low-saturation schemes
+- Intelligent sum of 6 column greying for 3-arrow mode
+- Optimized column widths for excellent mobile usability
 
-- Spreadsheet-like scoring interface with minimalistic design
-- Scoring keypad: X/10/9/8/7/6/5/4/3/2/1/M
-- Support for 3/6 arrows per end and 10/12 ends per set
-- Automatic score calculation and X/10/9 counting
-- Local scoring history with export to images (WIP)
-- Multi-language support (WIP)
+## development
 
-## Development
-
-This is a Flutter project. To run:
+This is a Flutter project with modern development practices:
 
 ```bash
 flutter pub get
 flutter run
 ```
+
+Built with Flutter SDK ^3.9.0, Material 3 theming, and flutter_lints 6.0.0 for code quality.
+
+See `CLAUDE.md` for complete architecture documentation and development roadmap.

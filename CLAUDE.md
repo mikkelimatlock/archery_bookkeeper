@@ -20,31 +20,45 @@ The app follows clean architecture principles with a modular structure ready for
 
 **core UI components**:
 - `ScoringPage`: Main application interface with settings and layout management
-- `ScoringGrid`: Complete scorecard with End\Shot | #1 #2 #3 | Sum of 3 | Sum of 6 | Accumulative columns
+- `ScoringGrid`: Complete responsive scorecard with static 12-row layout supporting both 3/6-arrow modes
 - `ScoringKeypad`: 4x3 grid layout (X,10,9/8,7,6/5,4,3/2,1,M) plus CLEAR button with archery-standard color coding
 - `ScoringCell`: Individual score input cells with selection highlighting and tap handling
-- `ToggleSwitches`: Configuration options for 3/6 arrows per end and 10/12 ends per set
+- `ToggleSwitches`: Arrow count configuration (3/6 arrows per end) with automatic end inference
 
 **scoring logic**:
-- Automatic calculation of end totals (Sum of 3)
-- Two-end totals (Sum of 6) displayed on even-numbered ends
-- Real-time accumulative running totals
+- Dynamic calculation system with logical-to-visual end mapping
+- Sum of 3 calculations: active in 3-arrow mode, greyed in 6-arrow mode
+- Sum of 6 calculations: displays on odd visual rows in both modes
+- Real-time accumulative running totals with proper bounds checking
 - X/10/9 counting with dedicated counters
 - CLEAR functionality for score correction and editing
 - Auto-advance input progression through scorecard
 
-**visual design**:
-- Color-coded keypad matching traditional archery scoring conventions
-- Proper scorecard layout with clear column headers and row organization
-- Final score display with X/10/9 counting section
-- Material 3 theme with green color scheme
+**visual design & architecture**:
+- Centralized color system with `ScoringColorScheme` class providing consistent theming
+- Traditional and lowSaturation color schemes with explicit text/background color pairs
+- Intelligent column greying: sum of 6 in 3-arrow mode, sum of 3 in 6-arrow mode
+- Responsive percentage-based layout eliminating viewport overflow issues
+- Clean merged header design with "Arrows" label replacing individual column indices
+- Disabled state colors for conditional UI elements with seamless visual hierarchy
+- Material 3 theme integration with archery-standard color conventions
+
+**technical improvements**:
+- Flutter lints upgraded to 6.0.0 for modern code quality standards
+- Complete color architecture documentation in `_constants.md`
+- Single source of truth for all score-related visual styling through `ScoringColors` class
+- Performance-optimized compile-time color constants with no runtime overhead
+- Static 12-row grid architecture replacing dynamic column spawning for stability
+- Logical grouping system with proper visual-to-logical end mapping for accurate calculations
 
 ### 📋 architecture overview
 
 ```
 lib/
 ├── config/              # Configuration and settings
-│   ├── constants/       # App-wide constants
+│   ├── constants/       # App-wide constants and color systems
+│   │   ├── scoring_colors.dart    # Centralized color scheme architecture
+│   │   └── _constants.md         # Color system documentation
 │   ├── localization/    # Multi-language support files
 │   └── settings/        # User preferences and app config
 ├── core/                # Business logic and models
@@ -80,24 +94,38 @@ lib/
 - CLEAR button removes score from selected cell
 
 **calculation engine**:
-- Real-time end totals with X=10, M=0 scoring
-- Sum of 6 appears on even-numbered ends (2, 4, 6, etc.)
-- Accumulative column shows running total through each end
+- Real-time end totals with X=10, M=0 scoring and proper bounds checking
+- Mode-specific behavior: 3-arrow (10 ends) vs 6-arrow (6 ends) automatically inferred
+- Sum of 3: active per row in 3-arrow mode, completely greyed in 6-arrow mode
+- Sum of 6: displays on odd visual rows in both modes with correct 6-arrow grouping
+- Accumulative column shows running total through each logical end
 - X/10/9 counters track precision shots
 - Final score displayed prominently
 
 **configuration options**:
 - Toggle between 3 or 6 arrows per end
-- Choose 10 or 12 ends per set
-- Settings automatically reinitialize scorecard
+- End count automatically inferred: 3-arrow mode = 10 ends (Indoor), 6-arrow mode = 6 ends (Outdoor)
+- Settings automatically reinitialize scorecard with proper logical grouping
 
-Color scheme follows archery conventions:
-- Gold/amber for X and 10 values (highest scores)
-- Blue highlighting for end totals
-- Yellow background for Sum of 6 calculations
-- Green shading for accumulative totals
+**adaptive color management**:
+- Centralized `ScoringColorScheme` architecture with traditional and lowSaturation variants
+- Intelligent sum of 6 column greying in 3-arrow mode while preserving layout
+- Disabled state colors maintaining visual hierarchy for inactive elements
+- Explicit text/background color pairs ensuring optimal contrast across all schemes
 
 ## next development priorities
+
+### 🚧 immediate UI improvements (4 remaining)
+
+**keypad interaction enhancements**:
+- implement keypad pop-up behavior for better mobile UX
+- prevent UI push-up when keypad appears on screen
+- add auto-retract keypad functionality after score input
+- include manual close button for keypad dismissal
+
+**scorecard polish**:
+- implement end grouping visual cues to highlight all cells of the currently selected end
+- implement per-end descending sort for score organization
 
 ### 🔧 core architecture improvements
 
@@ -166,10 +194,11 @@ Color scheme follows archery conventions:
 
 ### dependencies
 
-Current `pubspec.yaml` includes minimal dependencies:
-- Flutter SDK ^3.9.0
-- Material 3 theme support
-- Cupertino icons for iOS consistency
+Current `pubspec.yaml` includes essential dependencies:
+- Flutter SDK ^3.9.0 with Material 3 theme support
+- Cupertino icons ^1.0.8 for iOS consistency
+- Flutter lints ^6.0.0 for modern code quality standards
+- Dependency overrides ensuring compatibility with latest Flutter versions
 
 Recommended additions for full implementation:
 ```yaml
@@ -202,61 +231,24 @@ dev_dependencies:
   json_serializable: ^6.7.1
 ```
 
-### color architecture system
+### centralized color architecture
 
-The application features a sophisticated centralized color management system built around the `ScoringColorScheme` class, providing consistent visual theming across all scoring components.
+The application features a sophisticated color management system with the `ScoringColorScheme` class providing consistent visual theming across all components.
 
-**architecture overview**:
-- centralized color definitions in `lib/config/constants/scoring_colors.dart`
-- explicit background and text color pairs for every score value
-- multiple color schemes: traditional (vibrant) and lowSaturation (muted)
-- disabled state colors for conditional UI elements
-- single source of truth for all score-related visual styling
+**key architectural features**:
+- Complete color system in `lib/config/constants/scoring_colors.dart`
+- Traditional (vibrant) and lowSaturation (muted) color schemes available
+- Explicit text/background color pairs preventing contrast issues
+- Comprehensive disabled state support for conditional UI elements
+- Performance-optimized compile-time constants with zero runtime overhead
 
-**color scheme structure**:
-```dart
-class ScoringColorScheme {
-  // Background colors for each score value
-  final Color goldRing;     // X, 10, 9
-  final Color redRing;      // 8, 7
-  final Color blueRing;     // 6, 5
-  final Color blackRing;    // 4, 3
-  final Color whiteRing;    // 2, 1
-  final Color miss;         // M
-  final Color clear;        // CLEAR button
-  
-  // Explicit text colors for each background
-  final Color goldText;     // Black on gold for traditional
-  final Color redText;      // White on red
-  final Color blueText;     // White on blue
-  // ... etc for all combinations
-  
-  // Disabled state colors
-  final Color disabledBackground;
-  final Color disabledText;
-  final Color disabledBorder;
-}
-```
+**intelligent adaptive behavior**:
+- Sum of 6 column automatically greys out in 3-arrow mode while maintaining layout
+- Disabled states preserve visual hierarchy while clearly indicating inactive status
+- Color scheme switching requires single constant change for global application
+- Extensible architecture ready for additional themes (high contrast, dark mode, etc.)
 
-**usage patterns**:
-```dart
-// Get colors for any score value
-Color bg = ScoringColors.getScoreBackgroundColor('X');
-Color text = ScoringColors.getScoreTextColor('X');
-
-// Apply disabled styling for inactive elements
-Color disabledBg = ScoringColors.getDisabledBackground();
-Color disabledText = ScoringColors.getDisabledText();
-```
-
-**scheme switching**:
-Change the active color scheme globally by updating `_currentScheme` in `scoring_colors.dart`. The traditional scheme uses vibrant archery target colors for high visibility, while lowSaturation provides muted tones for reduced eye strain during extended use.
-
-**disabled state implementation**:
-The color system includes comprehensive disabled state support, used extensively for the sum of 6 column which remains visible but greyed out when in 3-arrow end mode. This maintains layout consistency while clearly indicating inactive functionality.
-
-**extensibility**:
-The architecture is designed for easy expansion with additional color schemes such as high contrast, colorblind-friendly, or dark theme variants. Each scheme defines all required colors explicitly, preventing contrast issues and ensuring intentional design decisions.
+See `lib/config/constants/_constants.md` for complete usage documentation and implementation examples.
 
 ### code organization principles
 
@@ -327,6 +319,10 @@ All score calculations follow official archery rules:
 - `/lib/presentation/widgets/scoring_grid/scoring_keypad.dart` - 4x3 score input keypad
 - `/lib/presentation/widgets/common/toggle_switches.dart` - Configuration toggles
 
+**color architecture**:
+- `/lib/config/constants/scoring_colors.dart` - Centralized color scheme definitions
+- `/lib/config/constants/_constants.md` - Complete color system documentation
+
 **design references**:
 - `/.uidesign/scorecard.xlsx` - Excel template with exact layout specifications
 - `/.uidesign/keypad_layout.xlsx` - Keypad button colors and arrangement
@@ -379,8 +375,16 @@ All score calculations follow official archery rules:
 
 ## conclusion
 
-The archery bookkeeper application has a solid foundation with a working scoring interface that matches traditional paper scorecards. The modular architecture provides a clear path for adding advanced features while maintaining code quality and testability.
+The archery bookkeeper application has evolved into a mature scoring interface with sophisticated visual architecture and polished user experience. The centralized color system, intelligent adaptive behavior, and optimized layouts create a professional-grade foundation that matches traditional paper scorecards while leveraging modern digital capabilities.
 
-The next development phase should focus on data persistence and proper state management to enable session saving and loading. This will transform the application from a calculator into a complete scoring solution for archery practitioners.
+**current strength highlights**:
+- Complete centralized color architecture with traditional and lowSaturation schemes
+- Robust 6-arrow layout with static 12-row grid and logical-to-visual end mapping
+- Responsive percentage-based layout eliminating viewport overflow issues
+- Intelligent column greying maintaining layout consistency in both 3/6-arrow modes
+- Modern development practices with flutter_lints 6.0.0 and performance-optimized constants
+- Comprehensive documentation enabling easy maintenance and feature expansion
 
-The user-provided design references ensure the application maintains authenticity to archery scoring conventions while leveraging modern digital capabilities for enhanced usability and functionality.
+The remaining 4 UI improvements focus on keypad interaction polish and end grouping visual cues. With the major 6-arrow layout architecture now complete and stable, the foundation is ready for the next major development phase focusing on data persistence and state management to transform the application from a sophisticated calculator into a complete scoring and session management solution for archery practitioners.
+
+The application successfully balances authenticity to archery scoring conventions with modern Flutter development practices, creating a clean, professional foundation ready for advanced features while maintaining code quality and visual consistency throughout.
