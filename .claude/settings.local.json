@@ -4,7 +4,10 @@
       "Bash(mv:*)",
       "Bash(true)",
       "Bash(rmdir:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(flutter build:*)",
+      "Bash(flutter test:*)"
     ]
   },
   "outputStyle": "koivisto"

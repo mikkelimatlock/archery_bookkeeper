@@ -48,3 +48,6 @@ app.*.map.json
 *ARROW_LAYOUT.md
 COMPLETED_*.md
 INCOMPLETE_*.md
+
+# User notes - private human thoughts
+NOTES.txt
