@@ -19,10 +19,10 @@ The app follows clean architecture principles with a modular structure ready for
 ### ✅ completed features
 
 **core UI components**:
-- `ScoringPage`: Main application interface with settings and layout management
+- `ScoringPage`: Main application interface with split viewport architecture and animated keypad management
 - `ScoringGrid`: Complete responsive scorecard with static 12-row layout supporting both 3/6-arrow modes
-- `ScoringKeypad`: 4x3 grid layout (X,10,9/8,7,6/5,4,3/2,1,M) plus CLEAR button with archery-standard color coding
-- `ScoringCell`: Individual score input cells with selection highlighting and tap handling
+- `ScoringKeypad`: Enhanced 4x4 layout with responsive flex architecture and dual-viewport positioning
+- `ScoringCell`: Individual score input cells with smart selection snapping and active end highlighting
 - `ToggleSwitches`: Arrow count configuration (3/6 arrows per end) with automatic end inference
 
 **scoring logic**:
@@ -32,7 +32,8 @@ The app follows clean architecture principles with a modular structure ready for
 - Real-time accumulative running totals with proper bounds checking
 - X/10/9 counting with dedicated counters
 - CLEAR functionality for score correction and editing
-- Auto-advance input progression through scorecard
+- Sophisticated per-end descending sort (X→10→9→...→1→M) with visual stability
+- Smart auto-advance with cross-end disarm preventing unintended end transitions
 
 **visual design & architecture**:
 - Centralized color system with `ScoringColorScheme` class providing consistent theming
@@ -42,6 +43,8 @@ The app follows clean architecture principles with a modular structure ready for
 - Clean merged header design with "Arrows" label replacing individual column indices
 - Disabled state colors for conditional UI elements with seamless visual hierarchy
 - Material 3 theme integration with archery-standard color conventions
+- Split viewport architecture with animated 250ms transitions and eased curves
+- Active end visual highlighting with blue glow borders and subtle background tinting
 
 **technical improvements**:
 - Flutter lints upgraded to 6.0.0 for modern code quality standards
@@ -87,11 +90,14 @@ lib/
 
 ### 🎯 current functionality
 
-**score input system**:
-- Tap any cell in the scorecard to select it
-- Use the keypad to input scores (X, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, M)
-- Auto-advance moves to the next cell after score input
-- CLEAR button removes score from selected cell
+**sophisticated end interaction system**:
+- Smart cell selection with automatic snapping: empty cell taps redirect to first empty in that end
+- Active end visual highlighting with blue glow and background tint for entire end group
+- Keypad pop-up behavior: appears when cell is armed, retracts on completion or manual dismiss
+- Per-end descending score sorting (X→10→9→...→1→M) maintaining visual stability during input
+- Cross-end disarm prevents auto-advance between ends, requiring deliberate end transitions
+- Enhanced 4x4 keypad layout with CLEAR (red) and CLOSE (blue) functional buttons
+- Background tap dismissal and manual CLOSE button for flexible keypad management
 
 **calculation engine**:
 - Real-time end totals with X=10, M=0 scoring and proper bounds checking
@@ -107,25 +113,50 @@ lib/
 - End count automatically inferred: 3-arrow mode = 10 ends (Indoor), 6-arrow mode = 6 ends (Outdoor)
 - Settings automatically reinitialize scorecard with proper logical grouping
 
+**split viewport architecture**:
+- Upper viewport contains settings and scrollable scorecard at dynamic height
+- Lower viewport shows keypad at 30% screen height when active, 0% when inactive
+- Smooth 250ms animated transitions with Curves.easeInOut for professional feel
+- Proper viewport separation prevents UI obstruction during score input
+- Responsive Expanded flex widgets ensure optimal space utilization
+
 **adaptive color management**:
 - Centralized `ScoringColorScheme` architecture with traditional and lowSaturation variants
 - Intelligent sum of 6 column greying in 3-arrow mode while preserving layout
 - Disabled state colors maintaining visual hierarchy for inactive elements
 - Explicit text/background color pairs ensuring optimal contrast across all schemes
+- Active end highlighting with subtle blue tints and prominent border emphasis
 
 ## next development priorities
 
-### 🚧 immediate UI improvements (4 remaining)
+### ✅ comprehensive end interaction system - completed
 
-**keypad interaction enhancements**:
-- implement keypad pop-up behavior for better mobile UX
-- prevent UI push-up when keypad appears on screen
-- add auto-retract keypad functionality after score input
-- include manual close button for keypad dismissal
+**sophisticated end interaction behaviors**:
+- ✅ per-end descending score sorting (X→10→9→...→1→M) with visual stability
+- ✅ smart cell selection that snaps empty cell taps to first empty in end
+- ✅ active end visual highlighting with blue glow and background tint
+- ✅ keypad pop-up/retract behavior based on cell states
+- ✅ end completion detection with cross-end disarm (no auto-advance to next end)
 
-**scorecard polish**:
-- implement end grouping visual cues to highlight all cells of the currently selected end
-- implement per-end descending sort for score organization
+**split viewport layout architecture**:
+- ✅ upper viewport contains settings and scrollable scorecard 
+- ✅ lower viewport shows keypad at 30% screen height when active, 0% when inactive
+- ✅ smooth 250ms animated transitions with eased curves
+- ✅ proper viewport separation prevents UI obstruction
+
+**enhanced keypad design**:
+- ✅ 4x4 layout with 4x3 score grid (75% width) + functional column (25% width)
+- ✅ percentage-based responsive sizing using Expanded flex widgets
+- ✅ CLEAR button (red) and new CLOSE button (blue) in functional column
+- ✅ no scrolling needed - all buttons visible within allocated space
+
+**interaction flow improvements**:
+- ✅ selecting any cell arms it for input and shows keypad with end highlighting
+- ✅ empty cell selection automatically snaps to first empty cell in that end
+- ✅ score input triggers automatic sorting and advances to next empty in same end
+- ✅ end completion or existing cell modification retracts keypad and disarms
+- ✅ CLOSE button provides manual keypad dismissal
+- ✅ background tapping also dismisses keypad
 
 ### 🔧 core architecture improvements
 
@@ -280,21 +311,26 @@ The scoring grid exactly matches traditional paper scorecards to ensure familiar
 - Calculated columns (Sum of 3, Sum of 6, Accumulative) match paper format
 - X/10/9 counting section at bottom for quick reference
 
-### keypad design
+### enhanced keypad design
 
-Button layout follows the user's exact specifications:
-- 4x3 grid with logical score arrangement
-- Color coding matches archery scoring conventions
-- CLEAR button prominently placed for error correction
-- Touch-friendly sizing for mobile devices
+Advanced 4x4 layout with responsive architecture:
+- 4x3 score grid (75% width) with logical arrangement (X,10,9/8,7,6/5,4,3/2,1,M)
+- functional column (25% width) with CLEAR (red) and CLOSE (blue) buttons
+- percentage-based responsive sizing using Expanded flex widgets
+- color coding matches archery scoring conventions
+- touch-friendly sizing optimized for mobile devices
+- split viewport positioning prevents UI obstruction
 
-### auto-advance behavior
+### sophisticated end interaction flow
 
-Score input automatically moves to the next logical cell:
-- Within an end: moves from arrow #1 to #2 to #3
-- Between ends: moves to arrow #1 of next end
-- Reduces tap count and speeds up scoring process
-- Can be overridden by tapping specific cells
+Advanced scoring workflow with intelligent behaviors:
+- smart cell selection: empty cell taps automatically snap to first empty in that end
+- active end highlighting: entire end group receives blue glow and background tint
+- auto-advance within ends: moves through arrow #1 to #2 to #3 after score input
+- cross-end disarm: prevents automatic advance between ends, requiring deliberate transitions
+- per-end descending sort: scores organize (X→10→9→...→1→M) with visual stability
+- keypad pop-up/retract: appears on cell arm, retracts on completion or manual dismiss
+- multiple dismissal methods: CLOSE button, background tap, or automatic on completion
 
 ### calculation accuracy
 
@@ -314,9 +350,9 @@ All score calculations follow official archery rules:
 - `/lib/presentation/pages/scoring_page.dart` - Main scoring interface with state management
 
 **scoring components**:
-- `/lib/presentation/widgets/scoring_grid/scoring_grid.dart` - Complete scorecard with calculations
-- `/lib/presentation/widgets/scoring_grid/scoring_cell.dart` - Individual score input cells
-- `/lib/presentation/widgets/scoring_grid/scoring_keypad.dart` - 4x3 score input keypad
+- `/lib/presentation/widgets/scoring_grid/scoring_grid.dart` - Complete scorecard with end highlighting and calculations
+- `/lib/presentation/widgets/scoring_grid/scoring_cell.dart` - Smart selection cells with snap-to-empty behavior
+- `/lib/presentation/widgets/scoring_grid/scoring_keypad.dart` - Enhanced 4x4 keypad with split viewport positioning
 - `/lib/presentation/widgets/common/toggle_switches.dart` - Configuration toggles
 
 **color architecture**:
@@ -375,16 +411,18 @@ All score calculations follow official archery rules:
 
 ## conclusion
 
-The archery bookkeeper application has evolved into a mature scoring interface with sophisticated visual architecture and polished user experience. The centralized color system, intelligent adaptive behavior, and optimized layouts create a professional-grade foundation that matches traditional paper scorecards while leveraging modern digital capabilities.
+The archery bookkeeper application has evolved into a sophisticated scoring interface with comprehensive end interaction system and polished user experience. The advanced keypad behaviors, intelligent cell selection, and split viewport architecture create a professional-grade foundation that enhances traditional paper scorecards with modern digital conveniences.
 
 **current strength highlights**:
-- Complete centralized color architecture with traditional and lowSaturation schemes
+- Comprehensive end interaction system with smart selection snapping and visual highlighting
+- Split viewport architecture preventing UI obstruction with smooth animated transitions
+- Enhanced 4x4 keypad design with responsive flex layout and dual dismissal methods
+- Per-end descending score sorting maintaining visual stability during input
+- Cross-end disarm system preventing unintended end transitions
+- Complete centralized color architecture with active end highlighting extensions
 - Robust 6-arrow layout with static 12-row grid and logical-to-visual end mapping
-- Responsive percentage-based layout eliminating viewport overflow issues
-- Intelligent column greying maintaining layout consistency in both 3/6-arrow modes
 - Modern development practices with flutter_lints 6.0.0 and performance-optimized constants
-- Comprehensive documentation enabling easy maintenance and feature expansion
 
-The remaining 4 UI improvements focus on keypad interaction polish and end grouping visual cues. With the major 6-arrow layout architecture now complete and stable, the foundation is ready for the next major development phase focusing on data persistence and state management to transform the application from a sophisticated calculator into a complete scoring and session management solution for archery practitioners.
+With the comprehensive end interaction system now complete, the application provides a sophisticated scoring experience that matches professional archery conventions while offering superior digital usability. The foundation is ready for the next major development phase focusing on data persistence and state management to transform the application from an advanced calculator into a complete scoring and session management solution for archery practitioners.
 
-The application successfully balances authenticity to archery scoring conventions with modern Flutter development practices, creating a clean, professional foundation ready for advanced features while maintaining code quality and visual consistency throughout.
+The application successfully balances authenticity to archery scoring conventions with advanced Flutter interaction patterns, creating a polished, professional foundation ready for enterprise features while maintaining exceptional code quality and visual consistency throughout.

@@ -8,6 +8,7 @@ class ScoringGrid extends StatelessWidget {
   final int endsPerSet;
   final int selectedRow;
   final int selectedColumn;
+  final int? activeEndIndex;
   final Function(int row, int column) onCellSelected;
 
   const ScoringGrid({
@@ -17,6 +18,7 @@ class ScoringGrid extends StatelessWidget {
     required this.endsPerSet,
     required this.selectedRow,
     required this.selectedColumn,
+    this.activeEndIndex,
     required this.onCellSelected,
   });
 
@@ -99,9 +101,12 @@ class ScoringGrid extends StatelessWidget {
     return 0;
   }
   
-  // Keep legacy method for accumulative calculation
-  int _calculateSumOfSix(int endIndex) {
-    return _calculateSumOfSixForLogicalEnd(endIndex);
+  
+  bool _isVisualRowInActiveEnd(int visualRow) {
+    if (activeEndIndex == null) return false;
+    
+    final logicalEnd = _getLogicalEndFromVisualRow(visualRow);
+    return logicalEnd == activeEndIndex;
   }
 
   int _calculateAccumulative(int endIndex) {
@@ -279,6 +284,7 @@ class ScoringGrid extends StatelessWidget {
                               child: cellActive ? ScoringCell(
                                 score: scores[actualRow][actualColumn],
                                 isSelected: selectedRow == actualRow && selectedColumn == actualColumn,
+                                isInActiveEnd: _isVisualRowInActiveEnd(visualRow),
                                 onTap: () => onCellSelected(actualRow, actualColumn),
                               ) : Container(
                                 decoration: BoxDecoration(

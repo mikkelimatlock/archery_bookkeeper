@@ -11,51 +11,97 @@ class ScoringKeypad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Keypad layout matching user's design: 4 rows × 3 columns + CLEAR
-    final List<List<String>> keypadLayout = [
+    // Score buttons: 4 rows × 3 columns
+    final List<List<String>> scoreLayout = [
       ['X', '10', '9'],
       ['8', '7', '6'],
       ['5', '4', '3'],
       ['2', '1', 'M'],
     ];
     
-    return Column(
-      children: [
-        // Main keypad grid (4×3)
-        Expanded(
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 1.5,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
+    // Functional buttons: 4 rows × 1 column
+    final List<String> functionalButtons = [
+      'CLEAR',
+      'CLOSE',
+      '', // Reserved for future functions
+      '', // Reserved for future functions
+    ];
+    
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Use Flex widgets for proper percentage distribution
+        return Row(
+          children: [
+            // Score buttons section (75% width)
+            Expanded(
+              flex: 75,
+              child: Column(
+                children: List.generate(4, (rowIndex) {
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 1),
+                      child: Row(
+                        children: List.generate(3, (colIndex) {
+                          final score = scoreLayout[rowIndex][colIndex];
+                          return Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 1),
+                              child: _buildKeypadButton(context, score),
+                            ),
+                          );
+                        }),
+                      ),
+                    ),
+                  );
+                }),
+              ),
             ),
-            itemCount: 12,
-            itemBuilder: (context, index) {
-              final row = index ~/ 3;
-              final col = index % 3;
-              final score = keypadLayout[row][col];
-              return _buildKeypadButton(context, score);
-            },
-          ),
-        ),
-        
-        const SizedBox(height: 8),
-        
-        // CLEAR button (full width)
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: _buildKeypadButton(context, 'CLEAR', isWide: true),
-        ),
-      ],
+            
+            const SizedBox(width: 2),
+            
+            // Functional buttons section (25% width)
+            Expanded(
+              flex: 25,
+              child: Column(
+                children: List.generate(4, (index) {
+                  final buttonText = functionalButtons[index];
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 1),
+                      child: buttonText.isNotEmpty 
+                        ? _buildKeypadButton(context, buttonText, isFunctional: true)
+                        : Container(), // Empty container for reserved buttons
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildKeypadButton(BuildContext context, String score, {bool isWide = false}) {
-    // Use centralized color configuration for consistency
-    final buttonColor = ScoringColors.getScoreBackgroundColor(score);
-    final textColor = ScoringColors.getScoreTextColor(score);
+  Widget _buildKeypadButton(BuildContext context, String score, {bool isFunctional = false}) {
+    // Use different styling for functional buttons
+    Color buttonColor;
+    Color textColor;
+    
+    if (isFunctional) {
+      if (score == 'CLEAR') {
+        buttonColor = Colors.red.shade400;
+        textColor = Colors.white;
+      } else if (score == 'CLOSE') {
+        buttonColor = Colors.blue.shade400;
+        textColor = Colors.white;
+      } else {
+        buttonColor = Colors.grey.shade300;
+        textColor = Colors.grey.shade600;
+      }
+    } else {
+      buttonColor = ScoringColors.getScoreBackgroundColor(score);
+      textColor = ScoringColors.getScoreTextColor(score);
+    }
 
     return ElevatedButton(
       onPressed: () => onScoreInput(score),
@@ -71,8 +117,9 @@ class ScoringKeypad extends StatelessWidget {
       child: Text(
         score,
         style: TextStyle(
-          fontSize: isWide ? 16 : (score.length > 1 ? 14 : 18),
-          fontWeight: ScoringColors.shouldUseBoldText(score) ? FontWeight.bold : FontWeight.w600,
+          fontSize: isFunctional ? 12 : (score.length > 1 ? 14 : 18),
+          fontWeight: isFunctional ? FontWeight.bold : 
+                     (ScoringColors.shouldUseBoldText(score) ? FontWeight.bold : FontWeight.w600),
         ),
       ),
     );

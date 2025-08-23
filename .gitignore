@@ -50,7 +50,9 @@ COMPLETED_*.md
 INCOMPLETE_*.md
 
 # User notes - private human thoughts
+# DO NOT REMOVE FROM GITIGNORE
 NOTES.txt
 
-# UI design references. DO NOT REMOVE FROM GITIGNORE
+# UI design references. 
+# DO NOT REMOVE FROM GITIGNORE
 .uidesign/

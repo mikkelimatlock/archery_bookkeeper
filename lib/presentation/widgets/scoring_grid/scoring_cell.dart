@@ -4,12 +4,14 @@ import '../../../config/constants/scoring_colors.dart';
 class ScoringCell extends StatelessWidget {
   final String score;
   final bool isSelected;
+  final bool isInActiveEnd;
   final VoidCallback onTap;
 
   const ScoringCell({
     super.key,
     required this.score,
     required this.isSelected,
+    this.isInActiveEnd = false,
     required this.onTap,
   });
 
@@ -27,14 +29,29 @@ class ScoringCell extends StatelessWidget {
             width: ScoringColors.getBorderWidth(isSelected),
           ),
           borderRadius: BorderRadius.circular(4),
+          // Add active end highlighting
+          boxShadow: isInActiveEnd ? [
+            BoxShadow(
+              color: Colors.blue.withValues(alpha: 0.3),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ] : null,
         ),
-        child: Center(
-          child: Text(
-            score,
-            style: TextStyle(
-              fontSize: 16,
-              color: ScoringColors.getScoreTextColor(score),
-              fontWeight: ScoringColors.shouldUseBoldText(score) ? FontWeight.bold : FontWeight.normal,
+        child: Container(
+          decoration: BoxDecoration(
+            // Add subtle background highlight for active end
+            color: isInActiveEnd ? Colors.blue.withValues(alpha: 0.1) : null,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Center(
+            child: Text(
+              score,
+              style: TextStyle(
+                fontSize: 16,
+                color: ScoringColors.getScoreTextColor(score),
+                fontWeight: ScoringColors.shouldUseBoldText(score) ? FontWeight.bold : FontWeight.normal,
+              ),
             ),
           ),
         ),
