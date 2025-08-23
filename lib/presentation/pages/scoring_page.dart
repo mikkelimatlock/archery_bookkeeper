@@ -48,13 +48,87 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
     );
   }
 
-  void _onArrowsPerEndChanged(int arrows) {
-    setState(() {
-      arrowsPerEnd = arrows;
-      // Infer ends per set based on ruleset
-      endsPerSet = arrows == 3 ? 10 : 6;
-      _initializeScores();
-    });
+  bool _hasAnyScores() {
+    for (int i = 0; i < scores.length; i++) {
+      for (int j = 0; j < scores[i].length; j++) {
+        if (scores[i][j].isNotEmpty) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  Future<void> _onArrowsPerEndChanged(int arrows) async {
+    // Check if there are existing scores and ask for confirmation
+    if (_hasAnyScores()) {
+      final bool? keepScores = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Keep current scores?'),
+            content: const Text(
+              'You have existing scores on the scorecard. Do you want to keep them when switching arrow count modes?\n\n'
+              '• Yes: Existing scores will be preserved\n'
+              '• No: All scores will be cleared',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No - Clear scores'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Yes - Keep scores'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (keepScores == null) {
+        // User cancelled, don't change anything
+        return;
+      }
+
+      setState(() {
+        final oldArrowsPerEnd = arrowsPerEnd;
+        final oldScores = List<List<String>>.from(scores.map((end) => List<String>.from(end)));
+        
+        arrowsPerEnd = arrows;
+        // Infer ends per set based on ruleset
+        endsPerSet = arrows == 3 ? 10 : 6;
+        
+        if (keepScores) {
+          _preserveScoresWithNewArrowCount(oldScores, oldArrowsPerEnd);
+        } else {
+          _initializeScores();
+        }
+      });
+    } else {
+      // No scores exist, just switch modes normally
+      setState(() {
+        arrowsPerEnd = arrows;
+        // Infer ends per set based on ruleset
+        endsPerSet = arrows == 3 ? 10 : 6;
+        _initializeScores();
+      });
+    }
+  }
+
+  void _preserveScoresWithNewArrowCount(List<List<String>> oldScores, int oldArrowsPerEnd) {
+    // Initialize new score structure
+    scores = List.generate(
+      endsPerSet,
+      (index) => List.generate(arrowsPerEnd, (index) => ''),
+    );
+    
+    // Copy over existing scores, respecting the new structure
+    for (int endIndex = 0; endIndex < oldScores.length && endIndex < scores.length; endIndex++) {
+      for (int arrowIndex = 0; arrowIndex < oldScores[endIndex].length && arrowIndex < arrowsPerEnd; arrowIndex++) {
+        scores[endIndex][arrowIndex] = oldScores[endIndex][arrowIndex];
+      }
+    }
   }
 
   void _sortEndScores(int endIndex) {
