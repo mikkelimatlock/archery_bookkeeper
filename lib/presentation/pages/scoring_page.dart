@@ -33,6 +33,7 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
   int? activeEndIndex;
   late AnimationController _animationController;
   late Animation<double> _keypadAnimation;
+  bool _isPreservingScores = false;
 
   @override
   void initState() {
@@ -146,18 +147,77 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
   }
 
   void _preserveScoresWithNewArrowCount(List<List<String>> oldScores, int oldArrowsPerEnd) {
+    _isPreservingScores = true; // Disable parent notifications during preservation
+    
     // Initialize new score structure
     scores = List.generate(
       endsPerSet,
       (index) => List.generate(arrowsPerEnd, (index) => ''),
     );
     
-    // Copy over existing scores, respecting the new structure
-    for (int endIndex = 0; endIndex < oldScores.length && endIndex < scores.length; endIndex++) {
-      for (int arrowIndex = 0; arrowIndex < oldScores[endIndex].length && arrowIndex < arrowsPerEnd; arrowIndex++) {
-        scores[endIndex][arrowIndex] = oldScores[endIndex][arrowIndex];
+    // Flatten old scores by visual rows, then redistribute to new structure
+    List<String> allOldScores = [];
+    
+    // Extract all scores in visual row order (12 rows total)
+    for (int visualRow = 0; visualRow < 12; visualRow++) {
+      if (oldArrowsPerEnd == 3) {
+        // 3-arrow mode: 1 visual row = 1 logical end
+        if (visualRow < oldScores.length) {
+          for (int col = 0; col < 3 && col < oldScores[visualRow].length; col++) {
+            allOldScores.add(oldScores[visualRow][col]);
+          }
+        }
+      } else {
+        // 6-arrow mode: 2 visual rows = 1 logical end
+        int logicalEnd = visualRow ~/ 2;
+        int rowInEnd = visualRow % 2;
+        if (logicalEnd < oldScores.length) {
+          for (int col = 0; col < 3; col++) {
+            int arrowIndex = (rowInEnd * 3) + col;
+            if (arrowIndex < oldScores[logicalEnd].length) {
+              allOldScores.add(oldScores[logicalEnd][arrowIndex]);
+            }
+          }
+        }
       }
     }
+    
+    // Redistribute to new structure by visual rows
+    int scoreIndex = 0;
+    for (int visualRow = 0; visualRow < 12; visualRow++) {
+      if (arrowsPerEnd == 3) {
+        // 3-arrow mode: 1 visual row = 1 logical end
+        if (visualRow < scores.length) {
+          for (int col = 0; col < 3; col++) {
+            if (scoreIndex < allOldScores.length && allOldScores[scoreIndex].isNotEmpty) {
+              scores[visualRow][col] = allOldScores[scoreIndex];
+            }
+            scoreIndex++;
+          }
+          // Sort the end after adding scores
+          _sortEndScores(visualRow);
+        }
+      } else {
+        // 6-arrow mode: 2 visual rows = 1 logical end
+        int logicalEnd = visualRow ~/ 2;
+        int rowInEnd = visualRow % 2;
+        if (logicalEnd < scores.length) {
+          for (int col = 0; col < 3; col++) {
+            int arrowIndex = (rowInEnd * 3) + col;
+            if (arrowIndex < arrowsPerEnd && scoreIndex < allOldScores.length && allOldScores[scoreIndex].isNotEmpty) {
+              scores[logicalEnd][arrowIndex] = allOldScores[scoreIndex];
+            }
+            scoreIndex++;
+          }
+          // Sort the end after completing both rows of the logical end
+          if (rowInEnd == 1) {
+            _sortEndScores(logicalEnd);
+          }
+        }
+      }
+    }
+    
+    _isPreservingScores = false; // Re-enable parent notifications
   }
 
   void _sortEndScores(int endIndex) {
@@ -185,8 +245,10 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
     // Update scores array
     scores[endIndex] = sortedScores;
     
-    // Notify parent of score changes
-    widget.onScoresUpdated(scores);
+    // Notify parent of score changes (unless we're preserving scores)
+    if (!_isPreservingScores) {
+      widget.onScoresUpdated(scores);
+    }
   }
 
   int _findFirstEmptyCellInEnd(int endIndex) {
