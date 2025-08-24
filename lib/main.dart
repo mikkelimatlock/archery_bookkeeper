@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'presentation/pages/main_navigation_page.dart';
 
 void main() {
-  runApp(const ArcheryBookkeeperApp());
+  runApp(const ArcheryScorerApp());
 }
 
-class ArcheryBookkeeperApp extends StatelessWidget {
-  const ArcheryBookkeeperApp({super.key});
+class ArcheryScorerApp extends StatelessWidget {
+  const ArcheryScorerApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Archery Bookkeeper',
+      title: 'Archery scorer',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.green,

@@ -123,7 +123,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                'Professional archery scoring with sophisticated end interaction system.',
+                'REPLACE ALL THESE TEXTS WITH LOCALISATION MARKERS!!',
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey,

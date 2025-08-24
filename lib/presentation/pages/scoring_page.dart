@@ -383,78 +383,78 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
       animation: _keypadAnimation,
       builder: (context, child) {
         // Calculate viewport heights based on animation progress
-        // AppBar is in parent navigation, account for status bar and safe area
-        final availableHeight = (MediaQuery.of(context).size.height - 
-                               MediaQuery.of(context).padding.top - 
-                               kToolbarHeight).clamp(200.0, double.infinity); // Minimum 200px
-        
-        final keypadHeight = (availableHeight * 0.30 * _keypadAnimation.value).clamp(0.0, availableHeight * 0.30);
-        final upperViewportHeight = (availableHeight - keypadHeight).clamp(100.0, availableHeight);
-        
-        return Scaffold(
-          body: GestureDetector(
-            onTap: _onBackgroundTapped,
-            behavior: HitTestBehavior.opaque,
-            child: Column(
-              children: [
-                // Upper viewport - Settings and Scoring grid (scrollable)
-                SizedBox(
-                  height: upperViewportHeight,
-                  child: Column(
-                    children: [
-                      // Settings toggles
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: ToggleSwitches(
-                          arrowsPerEnd: arrowsPerEnd,
-                          onArrowsPerEndChanged: _onArrowsPerEndChanged,
-                        ),
-                      ),
-                      
-                      // Scoring grid (scrollable within upper viewport)
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: ScoringGrid(
-                            scores: scores,
+        // Since we're inside MainNavigationPage's Scaffold body, use LayoutBuilder to get actual constraints
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final availableHeight = constraints.maxHeight.clamp(200.0, double.infinity); // Minimum 200px
+            
+            final keypadHeight = (availableHeight * 0.30 * _keypadAnimation.value).clamp(0.0, availableHeight * 0.30);
+            final upperViewportHeight = (availableHeight - keypadHeight).clamp(100.0, availableHeight);
+            
+            return GestureDetector(
+              onTap: _onBackgroundTapped,
+              behavior: HitTestBehavior.opaque,
+              child: Column(
+                children: [
+                  // Upper viewport - Settings and Scoring grid (scrollable)
+                  SizedBox(
+                    height: upperViewportHeight,
+                    child: Column(
+                      children: [
+                        // Settings toggles
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: ToggleSwitches(
                             arrowsPerEnd: arrowsPerEnd,
-                            endsPerSet: endsPerSet,
-                            selectedRow: selectedRow,
-                            selectedColumn: selectedColumn,
-                            activeEndIndex: activeEndIndex,
-                            onCellSelected: _onCellSelected,
+                            onArrowsPerEndChanged: _onArrowsPerEndChanged,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                // Lower viewport - Keypad (animated height)
-                if (keypadHeight > 0)
-                  SizedBox(
-                    height: keypadHeight,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        border: Border(
-                          top: BorderSide(color: Colors.grey.shade300, width: 1),
+                        
+                        // Scoring grid (scrollable within upper viewport)
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: ScoringGrid(
+                              scores: scores,
+                              arrowsPerEnd: arrowsPerEnd,
+                              endsPerSet: endsPerSet,
+                              selectedRow: selectedRow,
+                              selectedColumn: selectedColumn,
+                              activeEndIndex: activeEndIndex,
+                              onCellSelected: _onCellSelected,
+                            ),
+                          ),
                         ),
-                      ),
-                      child: Opacity(
-                        opacity: _keypadAnimation.value,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: ScoringKeypad(
-                            onScoreInput: _onScoreInput,
+                      ],
+                    ),
+                  ),
+                  
+                  // Lower viewport - Keypad (animated height)
+                  if (keypadHeight > 0)
+                    SizedBox(
+                      height: keypadHeight,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          border: Border(
+                            top: BorderSide(color: Colors.grey.shade300, width: 1),
+                          ),
+                        ),
+                        child: Opacity(
+                          opacity: _keypadAnimation.value,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: ScoringKeypad(
+                              onScoreInput: _onScoreInput,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-              ],
-            ),
-          ),
+                ],
+              ),
+            );
+          },
         );
       },
     );

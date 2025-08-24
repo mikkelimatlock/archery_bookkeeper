@@ -32,9 +32,9 @@ class ScoringKeypad extends StatelessWidget {
         // Use Flex widgets for proper percentage distribution
         return Row(
           children: [
-            // Score buttons section (75% width)
+            // Score buttons section (77% width)
             Expanded(
-              flex: 75,
+              flex: 77,
               child: Column(
                 children: List.generate(4, (rowIndex) {
                   return Expanded(
@@ -59,9 +59,9 @@ class ScoringKeypad extends StatelessWidget {
             
             const SizedBox(width: 2),
             
-            // Functional buttons section (25% width)
+            // Functional buttons section (23% width)
             Expanded(
-              flex: 25,
+              flex: 23,
               child: Column(
                 children: List.generate(4, (index) {
                   final buttonText = functionalButtons[index];

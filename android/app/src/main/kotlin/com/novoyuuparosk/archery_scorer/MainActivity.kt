@@ -1,4 +1,4 @@
-package com.novoyuuparosk.archery_bookkeeper
+package com.novoyuuparosk.archery_scorer
 
 import io.flutter.embedding.android.FlutterActivity
 
