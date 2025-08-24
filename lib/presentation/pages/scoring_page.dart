@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/localization/generated/app_localizations.dart';
 import '../widgets/scoring_grid/scoring_grid.dart';
 import '../widgets/scoring_grid/scoring_keypad.dart';
 import '../widgets/common/toggle_switches.dart';
@@ -87,16 +88,17 @@ class _ScoringPageState extends State<ScoringPage> with SingleTickerProviderStat
       final bool? keepScores = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
+          final l10n = AppLocalizations.of(context)!;
           return AlertDialog(
-            title: const Text('Keep scores?'),
+            title: Text(l10n.dialogKeepScoresTitle),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('No'),
+                child: Text(l10n.dialogNo),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Yes'),
+                child: Text(l10n.dialogYes),
               ),
             ],
           );

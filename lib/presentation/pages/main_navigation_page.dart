@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/localization/generated/app_localizations.dart';
 import 'scoring_page.dart';
 import 'settings_page.dart';
 
@@ -56,9 +57,9 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     const SettingsPage(),
   ];
 
-  final List<String> _pageTitles = [
-    'Main (Scorer)',
-    'Settings',
+  List<String> _getPageTitles(BuildContext context) => [
+    AppLocalizations.of(context)!.navMainScorer,
+    AppLocalizations.of(context)!.navSettings,
   ];
 
   void _onNavigationItemSelected(int index) {
@@ -70,9 +71,12 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final pageTitles = _getPageTitles(context);
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text(_pageTitles[_selectedIndex]),
+        title: Text(pageTitles[_selectedIndex]),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: _pages[_selectedIndex],
@@ -84,22 +88,22 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.inversePrimary,
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    'Archery Bookkeeper',
-                    style: TextStyle(
+                    l10n.appTitle,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
-                    'Alpha 0.1',
-                    style: TextStyle(
+                    l10n.appVersion,
+                    style: const TextStyle(
                       color: Colors.white70,
                       fontSize: 16,
                     ),
@@ -109,22 +113,22 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             ),
             ListTile(
               leading: const Icon(Icons.sports),
-              title: const Text('Main (Scorer)'),
+              title: Text(l10n.navMainScorer),
               selected: _selectedIndex == 0,
               onTap: () => _onNavigationItemSelected(0),
             ),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
+              title: Text(l10n.navSettings),
               selected: _selectedIndex == 1,
               onTap: () => _onNavigationItemSelected(1),
             ),
             const Divider(),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Text(
-                'REPLACE ALL THESE TEXTS WITH LOCALISATION MARKERS!!',
-                style: TextStyle(
+                l10n.devTodoLocalization,
+                style: const TextStyle(
                   fontSize: 12,
                   color: Colors.grey,
                 ),

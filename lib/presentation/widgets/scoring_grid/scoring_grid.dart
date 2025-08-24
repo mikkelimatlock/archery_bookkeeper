@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'scoring_cell.dart';
 import '../../../config/constants/scoring_colors.dart';
+import '../../../config/localization/generated/app_localizations.dart';
 
 class ScoringGrid extends StatelessWidget {
   final List<List<String>> scores;
@@ -139,6 +140,8 @@ class ScoringGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade400),
@@ -161,7 +164,7 @@ class ScoringGrid extends StatelessWidget {
                 // End column: ~13% (50/395)
                 Expanded(
                   flex: 13,
-                  child: Center(child: Text('End\\Shot', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                  child: Center(child: Text(l10n.headerEnd, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
                 ),
                 // Arrow columns: ~42% (165/395)
                 Expanded(
@@ -173,7 +176,7 @@ class ScoringGrid extends StatelessWidget {
                         color: Colors.blue.shade100,
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: const Text('Arrows', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text(l10n.headerArrows, style: const TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ),
@@ -182,7 +185,7 @@ class ScoringGrid extends StatelessWidget {
                   flex: 14,
                   child: Center(
                     child: Text(
-                      'Sum of 3', 
+                      l10n.headerSumOf3, 
                       style: TextStyle(
                         fontWeight: FontWeight.bold, 
                         fontSize: 12,
@@ -196,7 +199,7 @@ class ScoringGrid extends StatelessWidget {
                   flex: 14,
                   child: Center(
                     child: Text(
-                      'Sum of 6', 
+                      l10n.headerSumOf6, 
                       style: const TextStyle(
                         fontWeight: FontWeight.bold, 
                         fontSize: 12,
@@ -207,7 +210,7 @@ class ScoringGrid extends StatelessWidget {
                 // Accumulative: ~17% (70/395)
                 Expanded(
                   flex: 17,
-                  child: Center(child: Text('Accumulative', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                  child: Center(child: Text(l10n.headerAccumulative, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
                 ),
               ],
             ),
@@ -410,14 +413,15 @@ class ScoringGrid extends StatelessWidget {
                 top: BorderSide(color: Colors.grey.shade400, width: 2),
               ),
             ),
-            child: _buildCountingSection(),
+            child: _buildCountingSection(context),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCountingSection() {
+  Widget _buildCountingSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final counts = _calculateXAndTenCounts();
     final finalScore = _calculateAccumulative(scores.length - 1);
     
@@ -494,7 +498,7 @@ class ScoringGrid extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Final score', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              Text(l10n.scoreTotal, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               Text(
                 finalScore.toString(),
                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),

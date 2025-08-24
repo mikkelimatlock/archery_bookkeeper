@@ -1,0 +1,64 @@
+{
+  "@@locale": "fi",
+  
+  "appTitle": "Jousiammunnan tuloskirja",
+  "appVersion": "Alpha 0.1",
+  
+  "navMainScorer": "Pääsivu (Tuloslaskuri)",
+  "navSettings": "Asetukset",
+  
+  "arrowsPerEnd": "Nuolia per päätös",
+  "ruleset": "Sääntökokoelma",
+  "rulesetIndoor": "Sisärata",
+  "rulesetOutdoor": "Ulkorata",
+  "endsCount": "{count} päätöstä",
+  "@endsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  
+  "headerEnd": "Päätös",
+  "headerArrows": "Nuolet",
+  "headerSumOf3": "Summa 3",
+  "headerSumOf6": "Summa 6", 
+  "headerAccumulative": "Yhteensä",
+  "headerXCount": "X",
+  "header10Count": "10",
+  "header9Count": "9",
+  "scoreTotal": "Yhteensä",
+  
+  "keypadClear": "TYHJENNÄ",
+  "keypadClose": "SULJE",
+  
+  "dialogClearScoresTitle": "Tyhjennä pisteet", 
+  "dialogClearScoresMessage": "Tämä tyhjentää kaikki pisteet nykyiseltä kierrokselta. Jatka?",
+  "dialogArrowChangeTitle": "Muuta nuolien määrää",
+  "dialogArrowChangeMessage": "Nuolien määrän muuttaminen tyhjentää olemassa olevat pisteet. Jatka?",
+  "dialogPreserveScores": "Säilytetäänkö olemassa olevat pisteet mahdollisuuksien mukaan?",
+  "dialogCancel": "Peruuta",
+  "dialogContinue": "Jatka", 
+  "dialogYes": "Kyllä",
+  "dialogNo": "Ei",
+  
+  "settingsTitle": "Asetukset",
+  "settingsAppearance": "Ulkoasu",
+  "settingsScoring": "Pisteidenlasku", 
+  "settingsExport": "Vienti",
+  "settingsAbout": "Tietoja",
+  
+  "settingsPlaceholder": "Tämä on väliaikainen asetukset-sivu.",
+  "settingsFutureWillInclude": "Tulevat asetukset sisältävät:",
+  "settingsColorScheme": "• Väriteeman asetukset",
+  "settingsDefaultArrows": "• Nuolien oletusmäärät",
+  "settingsScoreInput": "• Pisteidenluonnin asetukset", 
+  "settingsExportOptions": "• Vientiasetukset",
+  "settingsSessionManagement": "• Istunnon hallinta",
+  
+  "dialogKeepScoresTitle": "Säilytetäänkö pisteet?",
+  
+  "devTodoLocalization": "KORVAA KAIKKI NÄMÄ TEKSTIT LOKALISOINTIMERKINNÖILLÄ!!"
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../config/localization/generated/app_localizations.dart';
 
 class ToggleSwitches extends StatelessWidget {
   final int arrowsPerEnd;
@@ -15,18 +16,21 @@ class ToggleSwitches extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _buildToggleGroup(
-              'Arrows per end',
+              context,
+              l10n.arrowsPerEnd,
               [3, 6],
               arrowsPerEnd,
               onArrowsPerEndChanged,
             ),
-            _buildRulesetInfo(),
+            _buildRulesetInfo(context),
           ],
         ),
       ],
@@ -34,6 +38,7 @@ class ToggleSwitches extends StatelessWidget {
   }
 
   Widget _buildToggleGroup(
+    BuildContext context,
     String label,
     List<int> options,
     int currentValue,
@@ -66,12 +71,14 @@ class ToggleSwitches extends StatelessWidget {
     );
   }
   
-  Widget _buildRulesetInfo() {
-    final rulesetName = arrowsPerEnd == 3 ? 'Indoor' : 'Outdoor';
+  Widget _buildRulesetInfo(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final rulesetName = arrowsPerEnd == 3 ? l10n.rulesetIndoor : l10n.rulesetOutdoor;
+    
     return Column(
       children: [
         Text(
-          'Ruleset',
+          l10n.ruleset,
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -95,7 +102,7 @@ class ToggleSwitches extends StatelessWidget {
                 ),
               ),
               Text(
-                '$endsPerSet ends',
+                l10n.endsCount(endsPerSet),
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.blue.shade600,

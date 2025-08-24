@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../config/constants/scoring_colors.dart';
+import '../../../config/localization/generated/app_localizations.dart';
 
 class ScoringKeypad extends StatelessWidget {
   final Function(String) onScoreInput;
@@ -11,6 +12,8 @@ class ScoringKeypad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     // Score buttons: 4 rows × 3 columns
     final List<List<String>> scoreLayout = [
       ['X', '10', '9'],
@@ -21,8 +24,8 @@ class ScoringKeypad extends StatelessWidget {
     
     // Functional buttons: 4 rows × 1 column
     final List<String> functionalButtons = [
-      'CLEAR',
-      'CLOSE',
+      l10n.keypadClear,
+      l10n.keypadClose,
       '', // Reserved for future functions
       '', // Reserved for future functions
     ];
@@ -83,15 +86,25 @@ class ScoringKeypad extends StatelessWidget {
   }
 
   Widget _buildKeypadButton(BuildContext context, String score, {bool isFunctional = false}) {
+    final l10n = AppLocalizations.of(context)!;
+    
     // Use different styling for functional buttons
     Color buttonColor;
     Color textColor;
     
+    // Map display text to internal values for callback
+    String internalValue = score;
+    if (score == l10n.keypadClear) {
+      internalValue = 'CLEAR';
+    } else if (score == l10n.keypadClose) {
+      internalValue = 'CLOSE';
+    }
+    
     if (isFunctional) {
-      if (score == 'CLEAR') {
+      if (internalValue == 'CLEAR') {
         buttonColor = Colors.red.shade400;
         textColor = Colors.white;
-      } else if (score == 'CLOSE') {
+      } else if (internalValue == 'CLOSE') {
         buttonColor = Colors.blue.shade400;
         textColor = Colors.white;
       } else {
@@ -99,12 +112,13 @@ class ScoringKeypad extends StatelessWidget {
         textColor = Colors.grey.shade600;
       }
     } else {
+      // Use score directly for color mapping since scores are not localized
       buttonColor = ScoringColors.getScoreBackgroundColor(score);
       textColor = ScoringColors.getScoreTextColor(score);
     }
 
     return ElevatedButton(
-      onPressed: () => onScoreInput(score),
+      onPressed: () => onScoreInput(internalValue),
       style: ElevatedButton.styleFrom(
         backgroundColor: buttonColor,
         foregroundColor: textColor,

@@ -1,0 +1,64 @@
+{
+  "@@locale": "en",
+  
+  "appTitle": "Archery Bookkeeper",
+  "appVersion": "Alpha 0.1",
+  
+  "navMainScorer": "Main (Scorer)",
+  "navSettings": "Settings",
+  
+  "arrowsPerEnd": "Arrows per end",
+  "ruleset": "Ruleset",
+  "rulesetIndoor": "Indoor",
+  "rulesetOutdoor": "Outdoor", 
+  "endsCount": "{count} ends",
+  "@endsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  
+  "headerEnd": "End",
+  "headerArrows": "Arrows", 
+  "headerSumOf3": "Sum of 3",
+  "headerSumOf6": "Sum of 6",
+  "headerAccumulative": "Accumulative",
+  "headerXCount": "X",
+  "header10Count": "10",
+  "header9Count": "9",
+  "scoreTotal": "Total",
+  
+  "keypadClear": "CLEAR",
+  "keypadClose": "CLOSE",
+  
+  "dialogClearScoresTitle": "Clear scores",
+  "dialogClearScoresMessage": "This will clear all scores for the current session. Continue?",
+  "dialogArrowChangeTitle": "Change arrow count",
+  "dialogArrowChangeMessage": "Changing arrow count will clear existing scores. Continue?",
+  "dialogPreserveScores": "Preserve existing scores when possible?",
+  "dialogCancel": "Cancel",
+  "dialogContinue": "Continue",
+  "dialogYes": "Yes",
+  "dialogNo": "No",
+  
+  "settingsTitle": "Settings",
+  "settingsAppearance": "Appearance",
+  "settingsScoring": "Scoring",
+  "settingsExport": "Export",
+  "settingsAbout": "About",
+  
+  "settingsPlaceholder": "This is a placeholder settings page.",
+  "settingsFutureWillInclude": "Future settings will include:",
+  "settingsColorScheme": "• Color scheme preferences",
+  "settingsDefaultArrows": "• Default arrow counts", 
+  "settingsScoreInput": "• Score input preferences",
+  "settingsExportOptions": "• Export settings",
+  "settingsSessionManagement": "• Session management",
+  
+  "dialogKeepScoresTitle": "Keep scores?",
+  
+  "devTodoLocalization": "REPLACE ALL THESE TEXTS WITH LOCALISATION MARKERS!!"
+}
