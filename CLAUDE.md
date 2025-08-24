@@ -46,6 +46,14 @@ The app follows clean architecture principles with a modular structure ready for
 - Split viewport architecture with animated 250ms transitions and eased curves
 - Active end visual highlighting with blue glow borders and subtle background tinting
 
+**localization framework**:
+- English and Finnish language support via flutter_localizations
+- ARB (Application Resource Bundle) file structure with automatic code generation
+- Comprehensive UI string localization across all components and widgets
+- Smart preservation of universal archery scoring notation (X, 10, 9, M)
+- Authentic Finnish archery terminology usage (päätös for "end", nuolet for "arrows")
+- Modern internationalization architecture ready for additional languages
+
 **technical improvements**:
 - Flutter lints upgraded to 6.0.0 for modern code quality standards
 - Complete color architecture documentation in `_constants.md`
@@ -62,7 +70,7 @@ lib/
 │   ├── constants/       # App-wide constants and color systems
 │   │   ├── scoring_colors.dart    # Centralized color scheme architecture
 │   │   └── _constants.md         # Color system documentation
-│   ├── localization/    # Multi-language support files
+│   ├── localization/    # Multi-language support files (ARB format)
 │   └── settings/        # User preferences and app config
 ├── core/                # Business logic and models
 │   ├── calculators/     # Score calculation logic
@@ -128,6 +136,18 @@ lib/
 - Active end highlighting with subtle blue tints and prominent border emphasis
 
 ## next development priorities
+
+### ✅ localization framework - completed
+
+**modern internationalization system**:
+- ✅ flutter_localizations integration with automatic code generation
+- ✅ ARB (Application Resource Bundle) file structure for scalable translations
+- ✅ English (en) and Finnish (fi) language support implemented
+- ✅ comprehensive UI string localization across all scoring components
+- ✅ smart preservation of universal archery scoring notation (X, 10, 9, M)
+- ✅ authentic Finnish archery terminology with proper context usage
+- ✅ extensible architecture ready for additional languages
+- ✅ automatic AppLocalizations generation via flutter gen-l10n
 
 ### ✅ comprehensive end interaction system - completed
 
@@ -196,7 +216,7 @@ lib/
 - Improved visual polish and responsiveness
 
 **phase 3 - advanced features**:
-- Multi-language support with JSON localization files
+- Additional language support (German, French, Spanish, etc.)
 - Different archery round types (FITA, NFAA, etc.)
 - Cloud synchronization with Google Drive integration
 - Social sharing capabilities (Twitter, image sharing)
@@ -227,6 +247,7 @@ lib/
 
 Current `pubspec.yaml` includes essential dependencies:
 - Flutter SDK ^3.9.0 with Material 3 theme support
+- flutter_localizations for internationalization support
 - Cupertino icons ^1.0.8 for iOS consistency
 - Flutter lints ^6.0.0 for modern code quality standards
 - Dependency overrides ensuring compatibility with latest Flutter versions
@@ -250,8 +271,8 @@ dependencies:
   image: ^4.1.3
   pdf: ^3.10.6
   
-  # Internationalization
-  intl: ^0.19.0
+  # Additional internationalization (already included flutter_localizations)
+  # intl: ^0.19.0  # Provided by flutter_localizations
   
   # Development
   json_annotation: ^4.8.1
@@ -359,6 +380,11 @@ All score calculations follow official archery rules:
 - `/lib/config/constants/scoring_colors.dart` - Centralized color scheme definitions
 - `/lib/config/constants/_constants.md` - Complete color system documentation
 
+**localization system**:
+- `/lib/config/localization/app_en.arb` - English language strings (template)
+- `/lib/config/localization/app_fi.arb` - Finnish language translations
+- `/lib/l10n/` - Generated localization classes (auto-generated, excluded from git)
+
 **design references**:
 - `/.uidesign/scorecard.xlsx` - Excel template with exact layout specifications
 - `/.uidesign/keypad_layout.xlsx` - Keypad button colors and arrangement
@@ -415,6 +441,7 @@ The archery bookkeeper application has evolved into a sophisticated scoring inte
 
 **current strength highlights**:
 - Comprehensive end interaction system with smart selection snapping and visual highlighting
+- Modern localization framework with English/Finnish support and extensible architecture
 - Split viewport architecture preventing UI obstruction with smooth animated transitions
 - Enhanced 4x4 keypad design with responsive flex layout and dual dismissal methods
 - Per-end descending score sorting maintaining visual stability during input
@@ -423,6 +450,6 @@ The archery bookkeeper application has evolved into a sophisticated scoring inte
 - Robust 6-arrow layout with static 12-row grid and logical-to-visual end mapping
 - Modern development practices with flutter_lints 6.0.0 and performance-optimized constants
 
-With the comprehensive end interaction system now complete, the application provides a sophisticated scoring experience that matches professional archery conventions while offering superior digital usability. The foundation is ready for the next major development phase focusing on data persistence and state management to transform the application from an advanced calculator into a complete scoring and session management solution for archery practitioners.
+With both the comprehensive end interaction system and localization framework now complete, the application provides a sophisticated, internationally-ready scoring experience that matches professional archery conventions while offering superior digital usability. The foundation is ready for the next major development phase focusing on data persistence and state management to transform the application from an advanced calculator into a complete scoring and session management solution for archery practitioners.
 
 The application successfully balances authenticity to archery scoring conventions with advanced Flutter interaction patterns, creating a polished, professional foundation ready for enterprise features while maintaining exceptional code quality and visual consistency throughout.
